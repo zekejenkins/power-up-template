@@ -8,13 +8,14 @@
   <div id="content">
     <p>Is this card Independent or Dependent?</p>
     <select id="dependency">
+      <option value="">Select...</option>
       <option value="independent">Independent</option>
       <option value="dependent">Dependent</option>
     </select>
     <div id="independentCardsSection" style="display:none;">
       <p>Select an Independent Card:</p>
       <select id="independentCards">
-        <!-- Options will be populated based on Trello API call -->
+        <!-- Independent cards will be populated here -->
       </select>
     </div>
     <button id="save" class="mod-primary">Save</button>
