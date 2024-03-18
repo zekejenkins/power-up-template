@@ -6,25 +6,19 @@
 </head>
 <body>
   <div id="content">
-    <p>Select a fruit</p>
-    <select id="fruit">
-      <option value="apple">Apple</option>
-      <option value="banana">Banana</option>
-      <option value="date">Date</option>
-      <option value="lemon">Lemon</option>
-      <option value="pineapple">Pineapple</option>
+    <p>Is this card Independent or Dependent?</p>
+    <select id="dependency">
+      <option value="independent">Independent</option>
+      <option value="dependent">Dependent</option>
     </select>
-    <p>Select a vegetable</p>
-    <select id="vegetable">
-      <option value="broccoli">Broccoli</option>
-      <option value="corn">Corn</option>
-      <option value="kale">Kale</option>
-      <option value="onion">Onion</option>
-      <option value="spinach">Spinach</option>
-    </select>
-    <p></p>
+    <div id="independentCardsSection" style="display:none;">
+      <p>Select an Independent Card:</p>
+      <select id="independentCards">
+        <!-- Options will be populated based on Trello API call -->
+      </select>
+    </div>
     <button id="save" class="mod-primary">Save</button>
   </div>
-  <script src="./js/select-dropdowns.js"></script>
+  <script src="./js/modified-script.js"></script>
 </body>
 </html>
