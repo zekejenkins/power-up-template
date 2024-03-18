@@ -4,18 +4,23 @@ var t = TrelloPowerUp.iframe();
 
 // Function to fetch and display independent cards
 function updateIndependentCardsDisplay() {
-  // Only fetch and show if 'dependent' is selected
   if (document.getElementById('dependency').value === 'dependent') {
+    console.log("Fetching independent cards...");
+
     t.cards('all')
       .then(function(cards) {
-        // Filter for independent cards based on a stored attribute or any logic you define
+        console.log("Total cards fetched: ", cards.length);
+        
         var independentCards = cards.filter(function(card) {
-          // Example logic, replace with your actual logic to determine if a card is independent
-          return card.name.startsWith("Independent");
+          // Make sure this logic accurately reflects how you're identifying independent cards
+          return card.name.startsWith("Independent"); // Example logic
         });
+
+        console.log("Independent cards: ", independentCards);
 
         var select = document.getElementById('independentCards');
         select.innerHTML = ''; // Clear current options
+
         independentCards.forEach(function(card) {
           var option = document.createElement('option');
           option.value = card.id;
@@ -23,12 +28,16 @@ function updateIndependentCardsDisplay() {
           select.appendChild(option);
         });
 
-        document.getElementById('independentCardsSection').style.display = '';
+        document.getElementById('independentCardsSection').style.display = independentCards.length > 0 ? '' : 'none';
+      })
+      .catch(function(err) {
+        console.error("Error fetching cards: ", err);
       });
   } else {
     document.getElementById('independentCardsSection').style.display = 'none';
   }
 }
+
 
 // Event listener for dependency select change
 document.getElementById('dependency').addEventListener('change', updateIndependentCardsDisplay);
