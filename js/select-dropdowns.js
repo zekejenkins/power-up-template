@@ -2,37 +2,35 @@
 
 var t = TrelloPowerUp.iframe();
 
-// This part is responsible for initializing the dropdowns with saved values
+// Initialize the dropdowns with saved values for the specific card
 t.render(function() {
-  return t.get('board', 'shared', 'selectedFruit')
-    .then(function(savedFruit) {
-      if(savedFruit) {
-        document.getElementById('fruit').value = savedFruit;
-      }
-    })
-    .then(function() {
-      return t.get('board', 'shared', 'selectedVegetable');
-    })
-    .then(function(savedVegetable) {
-      if(savedVegetable) {
-        document.getElementById('vegetable').value = savedVegetable;
-      }
-    })
-    .then(function(){
-      t.sizeTo('#content').done();
-    });
+  return Promise.all([
+    t.get('card', 'shared', 'selectedFruit'),
+    t.get('card', 'shared', 'selectedVegetable')
+  ])
+  .then(function([savedFruit, savedVegetable]) {
+    if(savedFruit) {
+      document.getElementById('fruit').value = savedFruit;
+    }
+    if(savedVegetable) {
+      document.getElementById('vegetable').value = savedVegetable;
+    }
+  })
+  .then(function(){
+    t.sizeTo('#content').done();
+  });
 });
 
-// This part listens for the save button click to store the selections
+// Listen for the save button click to store the selections specific to this card
 document.getElementById('save').addEventListener('click', function(){
-  var fruit = document.getElementById('fruit').value;
-  var vegetable = document.getElementById('vegetable').value;
+  var fruitValue = document.getElementById('fruit').value;
+  var vegetableValue = document.getElementById('vegetable').value;
 
-  return t.set('board', 'shared', 'selectedFruit', fruit)
-    .then(function(){
-      return t.set('board', 'shared', 'selectedVegetable', vegetable);
-    })
-    .then(function(){
-      t.closePopup();
-    });
+  return Promise.all([
+    t.set('card', 'shared', 'selectedFruit', fruitValue),
+    t.set('card', 'shared', 'selectedVegetable', vegetableValue)
+  ])
+  .then(function(){
+    t.closePopup();
+  });
 });
