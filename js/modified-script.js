@@ -9,12 +9,18 @@ function updateIndependentCardsDisplay() {
 
     t.cards('all')
       .then(function(cards) {
-        console.log("Total cards fetched: ", cards.length);
-        
-        var independentCards = cards.filter(function(card) {
-          // Make sure this logic accurately reflects how you're identifying independent cards
-          return card.name.startsWith("Independent"); // Example logic
-        });
+        // Map each card to a promise that resolves to either the card (if independent) or null
+        const cardPromises = cards.map(card =>
+          t.get(card.id, 'shared', 'dependencyType')
+            .then(dependencyType => dependencyType === 'independent' ? card : null)
+        );
+
+        // Wait for all promises to resolve
+        return Promise.all(cardPromises);
+      })
+      .then(function(cardsOrNulls) {
+        // Filter out the nulls, leaving only independent cards
+        var independentCards = cardsOrNulls.filter(card => card !== null);
 
         console.log("Independent cards: ", independentCards);
 
@@ -37,6 +43,7 @@ function updateIndependentCardsDisplay() {
     document.getElementById('independentCardsSection').style.display = 'none';
   }
 }
+
 
 
 // Event listener for dependency select change
