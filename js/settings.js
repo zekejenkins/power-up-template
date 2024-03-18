@@ -3,20 +3,17 @@
 var Promise = TrelloPowerUp.Promise;
 var t = TrelloPowerUp.iframe();
 
-var fruitSelector = document.getElementById('fruit');
+var dependencySelector = document.getElementById('Dependency');
 var vegetableSelector = document.getElementById('vegetable');
 
 t.render(function(){
   return Promise.all([
-    t.get('board', 'shared', 'fruit'),
+    t.get('board', 'shared', 'Dependency'),
     t.get('board', 'private', 'vegetable')
   ])
-  .spread(function(savedFruit, savedVegetable){
-    if(savedFruit && /[a-z]+/.test(savedFruit)){
-      fruitSelector.value = savedFruit;
-    }
-    if(savedVegetable && /[a-z]+/.test(savedVegetable)){
-      vegetableSelector.value = savedVegetable;
+  .spread(function(savedDependency){
+    if(savedFruit && /[a-z]+/.test(savedDependency)){
+      dependencySelector.value = savedDependcy;
     }
   })
   .then(function(){
@@ -26,9 +23,9 @@ t.render(function(){
 });
 
 document.getElementById('save').addEventListener('click', function(){
-  return t.set('board', 'private', 'vegetable', vegetableSelector.value)
+  return t.set('board', 'private', 'Dependency', dependencySelector.value)
   .then(function(){
-    return t.set('board', 'shared', 'fruit', fruitSelector.value);
+    return t.set('board', 'shared', 'vegetable', vegetableSelector.value);
   })
   .then(function(){
     t.closePopup();
