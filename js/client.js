@@ -198,7 +198,6 @@ var cardButtonCallback = function(t){
     url: './select-dropdowns.html',
     height: 184 // Adjust the height as needed
   });
-};
 
 
   // we could provide a standard iframe popup, but in this case we
