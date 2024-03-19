@@ -90,10 +90,10 @@ var getBadges = function(t) {
     var independentCardId = results[1];
     var badges = [];
     
-    if (dependencyType === 'independent') {
+    if (dependencyType === 'dependent') {
       badges.push({
         icon: GRAY_ICON,
-        text: 'Independent',
+        text: 'Testing',
         color: 'green',
       });
     } else if (dependencyType === 'dependent') {
