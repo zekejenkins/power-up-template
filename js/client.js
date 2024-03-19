@@ -90,12 +90,12 @@ var getBadges = function(t) {
     var badges = [];
     
     // Handle 'independent'
-    if (dependencyType === 'dependent') {
+    if (dependencyType === 'dependent' && independentCardId) {
       badges.push({
         icon: GRAY_ICON,
         text: 'Dependent',
         color: 'red',
-        url: 'https://trello.com/c/'& independentCardId,
+        url: 'https://trello.com/c/' + independentCardId,
       });
     }
     
