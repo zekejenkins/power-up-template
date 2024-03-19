@@ -103,7 +103,7 @@ var getBadges = function(t) {
       badges.push({
         icon: GRAY_ICON,
         text: 'Independent',
-        color: 'red',
+        color: 'green',
       });
       
       if (independentCardId) {
