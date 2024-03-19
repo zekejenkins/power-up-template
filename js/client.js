@@ -96,7 +96,9 @@ var getBadges = function(t) {
         text: 'Independent',
         color: 'green',
       });
-    } elseif (dependencyType === 'Dependent') {
+    } 
+    
+    if (dependencyType === 'Dependent') {
       badges.push({
         icon: GRAY_ICON,
         text: 'Dependent',
