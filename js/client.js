@@ -90,33 +90,31 @@ var getBadges = function(t) {
     var badges = [];
     
     // Handle 'independent'
-    if (dependencyType === 'independent') {
-      badges.push({
-        icon: GRAY_ICON,
-        text: 'Independent',
-        color: 'green',
-      });
-    }
-    
-    // Handle 'dependent'
     if (dependencyType === 'dependent') {
       badges.push({
         icon: GRAY_ICON,
         text: 'Dependent',
         color: 'red',
       });
+    }
+    
+    // Handle 'dependent'
+    if (dependencyType === 'independent') {
+      badges.push({
+        icon: GRAY_ICON,
+        text: 'Independent',
+        color: 'green',
+      });
       
       if (independentCardId) {
-        // Fetch the URL of the independent card to add as a link in the badge
+        // Attempt to add additional badge details for dependent cards
         return t.card(independentCardId)
-          .get('url')
-          .then(function(independentCardUrl) {
-            // Add a badge for the parent card with a link
+          .get('name')
+          .then(function(independentCardName) {
             badges.push({
               icon: GRAY_ICON,
-              text: 'Parent Card',
+              text: 'Parent: ' + independentCardName,
               color: 'blue',
-              url: independentCardUrl, // This makes the badge clickable, leading to the parent card's URL
             });
             return badges;
           });
@@ -127,7 +125,6 @@ var getBadges = function(t) {
     return badges;
   });
 };
-
 
 
 var boardButtonCallback = function(t){
