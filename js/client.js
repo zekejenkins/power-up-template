@@ -80,45 +80,53 @@ var GLITCH_ICON = './images/glitch.svg';
 var WHITE_ICON = './images/icon-white.svg';
 var GRAY_ICON = './images/icon-gray.svg'; // Ensure this path is correct
 
-var getBadges = function(t){
+var getBadges = function(t) {
+  // Use .then() instead of .spread() for compatibility
   return Promise.all([
     t.get('card', 'shared', 'dependencyType'),
     t.get('card', 'shared', 'independentCardId')
-  ]).spread(function(dependencyType, independentCardId){
+  ]).then(function(results) {
+    var dependencyType = results[0];
+    var independentCardId = results[1];
     var badges = [];
     
-    if(dependencyType === 'independent'){
+    if (dependencyType === 'independent') {
       badges.push({
         icon: GRAY_ICON,
         text: 'Independent',
         color: 'green',
       });
-    } else if(dependencyType === 'dependent'){
-      badges.push({
+    } else if (dependencyType === 'dependent') {
+      var dependentBadge = {
         icon: GRAY_ICON,
         text: 'Dependent',
         color: 'red',
-      });
+      };
+      badges.push(dependentBadge);
 
-      // Fetch the name of the independent card this card is dependent on
-      if(independentCardId){
+      if (independentCardId) {
+        // Asynchronously fetch the name of the independent card
         return t.card(independentCardId)
           .get('name')
-          .then(function(independentCardName){
+          .then(function(independentCardName) {
+            // Add additional badge for the parent card name
             badges.push({
               icon: GRAY_ICON,
               text: 'Parent: ' + independentCardName,
               color: 'blue',
             });
-            return badges;
+            return badges; // Ensure badges are returned here
           });
       }
+      // If no independentCardId, return what we have
+      return badges;
     }
-    
-    // Return badges directly if not dependent or no parent card ID is found
+
+    // Return badges for other cases, such as when not dependent or independent
     return badges;
   });
 };
+
 
 var boardButtonCallback = function(t){
   return t.popup({
