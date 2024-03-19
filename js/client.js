@@ -89,43 +89,34 @@ var getBadges = function(t) {
     var independentCardId = results[1];
     var badges = [];
     
-    // Handle 'independent'
-    if (dependencyType === 'dependent') {
-      badges.push({
-        icon: GRAY_ICON,
-        text: 'Dependent',
-        color: 'red',
-        url: 'https://google.com',
-      });
-    }
-    
     // Handle 'dependent'
-    if (dependencyType === 'independent') {
+    if (dependencyType === 'dependent') {
+      // Fetch the shortLink of the independent card to create a URL
+      return t.card(independentCardId)
+        .get('shortUrl')
+        .then(function(shortUrl) {
+          var independentCardUrl = `https://trello.com/c/${shortUrl}`;
+          badges.push({
+            icon: GRAY_ICON, // Icon for the badge
+            text: 'Parent Card', // Text displayed on the badge
+            color: 'blue', // Badge color
+            url: independentCardUrl, // URL to the independent card
+          });
+          return badges;
+        });
+    } else if (dependencyType === 'independent') {
       badges.push({
         icon: GRAY_ICON,
         text: 'Independent',
         color: 'green',
       });
-      
-      if (independentCardId) {
-        // Attempt to add additional badge details for dependent cards
-        return t.card(independentCardId)
-          .get('name')
-          .then(function(independentCardName) {
-            badges.push({
-              icon: GRAY_ICON,
-              text: 'Parent: ' + independentCardName,
-              color: 'blue',
-            });
-            return badges;
-          });
-      }
     }
-    
-    // Directly return badges if not fetching additional details
-    return badges;
+
+    return badges; // Return badges if the card is independent or if there's no dependent card to link to
   });
 };
+
+
 
 
 var boardButtonCallback = function(t){
