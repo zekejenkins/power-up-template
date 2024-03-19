@@ -90,7 +90,7 @@ var getBadges = function(t) {
     var badges = [];
     
     // Handle 'dependent'
-    if (dependencyType === 'dependent' && independentCardId) {
+    if (dependencyType === 'dependent') {
       // Fetch the shortLink of the independent card to create a URL
       return t.card(independentCardId)
         .get('shortLink')
