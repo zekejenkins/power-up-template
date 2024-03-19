@@ -81,7 +81,6 @@ var WHITE_ICON = './images/icon-white.svg';
 var GRAY_ICON = './images/icon-gray.svg'; // Ensure this path is correct
 
 var getBadges = function(t) {
-  // Use .then() instead of .spread() for compatibility
   return Promise.all([
     t.get('card', 'shared', 'dependencyType'),
     t.get('card', 'shared', 'independentCardId')
@@ -90,39 +89,39 @@ var getBadges = function(t) {
     var independentCardId = results[1];
     var badges = [];
     
+    // Handle 'independent'
     if (dependencyType === 'independent') {
       badges.push({
         icon: GRAY_ICON,
         text: 'Independent',
         color: 'green',
       });
-    } else if (dependencyType === 'dependent') {
-      var dependentBadge = {
+    }
+    
+    // Handle 'dependent'
+    if (dependencyType === 'dependent') {
+      badges.push({
         icon: GRAY_ICON,
         text: 'Dependent',
         color: 'red',
-      };
-      badges.push(dependentBadge);
-
+      });
+      
       if (independentCardId) {
-        // Asynchronously fetch the name of the independent card
+        // Attempt to add additional badge details for dependent cards
         return t.card(independentCardId)
           .get('name')
           .then(function(independentCardName) {
-            // Add additional badge for the parent card name
             badges.push({
               icon: GRAY_ICON,
               text: 'Parent: ' + independentCardName,
               color: 'blue',
             });
-            return badges; // Ensure badges are returned here
+            return badges;
           });
       }
-      // If no independentCardId, return what we have
-      return badges;
     }
-
-    // Return badges for other cases, such as when not dependent or independent
+    
+    // Directly return badges if not fetching additional details
     return badges;
   });
 };
