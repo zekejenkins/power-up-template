@@ -95,7 +95,7 @@ var getBadges = function(t) {
         icon: GRAY_ICON,
         text: 'Dependent',
         color: 'red',
-        url: 'ttps://trello.com/c/' & indepdendentCardId,
+        url: 'ttps://trello.com/c/' & '65f48651366a539bbfb92327',
       });
     }
     
