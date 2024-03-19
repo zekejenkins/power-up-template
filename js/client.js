@@ -95,6 +95,7 @@ var getBadges = function(t) {
         icon: GRAY_ICON,
         text: 'Dependent',
         color: 'red',
+        url: 'https://google.com',
       });
     }
     
