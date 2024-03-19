@@ -93,7 +93,7 @@ var getBadges = function(t) {
     if (dependencyType === 'dependent') {
       badges.push({
         icon: GRAY_ICON,
-        text: 'Dependent' + independentCardName,
+        text: 'Dependent',
         color: 'red',
       });
     }
