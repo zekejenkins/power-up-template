@@ -81,51 +81,58 @@ var WHITE_ICON = './images/icon-white.svg';
 var GRAY_ICON = './images/icon-gray.svg'; // Ensure this path is correct
 
 var getBadges = function(t) {
+  // First, fetch the necessary data: the dependency type and the ID of the independent card.
   return Promise.all([
     t.get('card', 'shared', 'dependencyType'),
     t.get('card', 'shared', 'independentCardId')
-  ]).then(function(results) {
+  ])
+  .then(function(results) {
     var dependencyType = results[0];
     var independentCardId = results[1];
     var badges = [];
-    
-    // Handle 'independent'
-    if (dependencyType === 'dependent') {
-      badges.push({
-        icon: GRAY_ICON,
-        text: 'Dependent',
-        color: 'red',
-        url: 'https://google.com',
-      });
-    }
-    
-    // Handle 'dependent'
+
+    // If the card is independent, just push the corresponding badge.
     if (dependencyType === 'independent') {
       badges.push({
         icon: GRAY_ICON,
         text: 'Independent',
         color: 'green',
       });
-      
+    }
+    // If the card is dependent, we need to find the independent card's shortUrl.
+    else if (dependencyType === 'dependent') {
+      // Check if there's an associated independent card ID.
       if (independentCardId) {
-        // Attempt to add additional badge details for dependent cards
-        return t.card(independentCardId)
-          .get('name')
-          .then(function(independentCardName) {
+        // Fetch all cards to find the one with the matching independentCardId.
+        return t.cards('all')
+        .then(function(cards) {
+          // Find the specific independent card by ID.
+          var independentCard = cards.find(card => card.id === independentCardId);
+          if (independentCard) {
+            // Assuming we've found the independent card, use its shortUrl.
             badges.push({
               icon: GRAY_ICON,
-              text: 'Parent: ' + independentCardName,
-              color: 'blue',
+              text: 'Dependent',
+              color: 'red',
+              url: independentCard.shortUrl, // Use the shortUrl from the found independent card.
             });
-            return badges;
-          });
+          }
+          return badges; // Return the updated badges array.
+        });
+      } else {
+        // If there's no independentCardId, just add the Dependent badge without a URL.
+        badges.push({
+          icon: GRAY_ICON,
+          text: 'Dependent',
+          color: 'red',
+        });
       }
     }
-    
-    // Directly return badges if not fetching additional details
-    return badges;
+
+    return badges; // Return the badges array for other cases.
   });
 };
+
 
 
 var boardButtonCallback = function(t){
