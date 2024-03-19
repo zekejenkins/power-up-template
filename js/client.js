@@ -90,21 +90,19 @@ var getBadges = function(t) {
     var independentCardId = results[1];
     var badges = [];
     
-    if (dependencyType === 'Independent') {
+    if (dependencyType === 'independent') {
       badges.push({
         icon: GRAY_ICON,
         text: 'Independent',
         color: 'green',
       });
-    } 
-    
-    if (dependencyType === 'Dependent') {
-      badges.push({
+    } else if (dependencyType === 'dependent') {
+      var dependentBadge = {
         icon: GRAY_ICON,
         text: 'Dependent',
         color: 'red',
-      });
-    }
+      };
+      badges.push(dependentBadge);
 
       if (independentCardId) {
         // Asynchronously fetch the name of the independent card
