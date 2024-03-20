@@ -439,24 +439,34 @@ function onCardCompletion(cardId, isCompleted) {
 
 
 // This function checks for completed cards and logs their IDs to the console.
-function logCompletedCardIds(t) {
+TrelloPowerUp.initialize({
+  'board-buttons': function(t, options) {
+    return [{
+      icon: GRAY_ICON, // Your icon
+      text: 'Track Completed Cards',
+      callback: function(t) {
+        startPollingForCompletedCards(t);
+      }
+    }];
+  },
+  // other capabilities
+});
+
+function startPollingForCompletedCards(t) {
+  // Use the t object to interact with the Trello API
+  const poll = () => {
     t.cards('all')
-      .then(function(cards) {
+      .then(cards => {
         const completedCardIds = cards.filter(card => card.dueComplete).map(card => card.id);
-        console.log("Completed Card IDs:", completedCardIds);
+        console.log('Completed Card IDs:', completedCardIds);
       })
-      .catch(function(error) {
-        console.error("Error fetching cards:", error);
-      });
+      .catch(console.error);
+  };
+  
+  poll(); // Call immediately to avoid waiting for the first interval
+  setInterval(poll, 10000); // Then poll every 10 seconds
 }
 
-// Interval setup to call the logCompletedCardIds function every 10 seconds.
-setInterval(function() {
-    // Assuming 't' is your Trello Power-Up client object.
-    // This example shows a generic approach; you might need to adjust it based on where and how you initialize your Power-Up.
-    const t = TrelloPowerUp.iframe();
-    logCompletedCardIds(t);
-}, 10000);
 
 
 
