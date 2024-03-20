@@ -35,7 +35,7 @@ function fetchAndDisplayIndependentCards(selectedCardId) {
 function initializeForm() {
   t.get('card', 'shared', ['dependencyType', 'independentCardId', 'startCondition', 'duration'])
     .then(function(data) {
-      const dependencyType = data[0];
+      const dependencyType = data && data[0];
       if(dependencyType) {
         document.getElementById('dependency').value = dependencyType;
         if(dependencyType === 'dependent') {
@@ -50,12 +50,16 @@ function initializeForm() {
           document.getElementById('independentCardsSection').style.display = 'none';
           document.getElementById('dependentOptions').style.display = 'none';
         }
+      } else {
+        // Handle case when shared data is not available or incomplete
+        console.error('Shared data is not available or incomplete.');
       }
     })
     .catch(function(err) {
       console.error('Error initializing form:', err);
     });
 }
+
 
 document.getElementById('dependency').addEventListener('change', function() {
   if(this.value === 'dependent') {
