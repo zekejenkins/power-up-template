@@ -437,30 +437,27 @@ function onCardCompletion(cardId, isCompleted) {
   });
 }
 
-/// Assuming these functions are defined in your script
 
-
-function startPolling(t){
-  // Assuming you have a function defined to fetch and process cards
-  function fetchAndProcessCards() {
+// This function checks for completed cards and logs their IDs to the console.
+function logCompletedCardIds(t) {
     t.cards('all')
       .then(function(cards) {
-        cards.forEach(function(card) {
-          if (card.dueComplete) {
-            // Your logic for handling a completed card goes here
-            console.log(`Card ${card.name} is completed.`);
-            // For example, calling onCardCompletion or similar
-          }
-        });
+        const completedCardIds = cards.filter(card => card.dueComplete).map(card => card.id);
+        console.log("Completed Card IDs:", completedCardIds);
       })
       .catch(function(error) {
-        console.error("Error during polling for card updates:", error);
+        console.error("Error fetching cards:", error);
       });
-  }
-
-  // Start polling every 10 seconds
-  setInterval(fetchAndProcessCards, 10000);
 }
+
+// Interval setup to call the logCompletedCardIds function every 10 seconds.
+setInterval(function() {
+    // Assuming 't' is your Trello Power-Up client object.
+    // This example shows a generic approach; you might need to adjust it based on where and how you initialize your Power-Up.
+    const t = TrelloPowerUp.iframe();
+    logCompletedCardIds(t);
+}, 10000);
+
 
 
 
