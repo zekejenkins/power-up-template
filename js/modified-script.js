@@ -33,26 +33,20 @@ function fetchAndDisplayIndependentCards(selectedCardId) {
 }
 
 function initializeForm() {
-  t.get('card', 'shared', 'dependencyType').then(function(dependencyType) {
-    if(dependencyType) {
+  t.get('card', 'shared', ['dependencyType', 'independentCardId', 'dependentOptions']).then(function(data) {
+    const { dependencyType, independentCardId, dependentOptions } = data;
+
+    if (dependencyType) {
       document.getElementById('dependency').value = dependencyType;
-      if(dependencyType === 'dependent') {
-        t.card('all')
-          .then(function(card) {
-            const pluginData = card.pluginData.find(data => data.access === 'shared');
-            if (pluginData) {
-              const sharedData = JSON.parse(pluginData.value);
-              fetchAndDisplayIndependentCards(sharedData.independentCardId);
-              // Display duration options for dependent cards
-              document.getElementById('dependentOptions').style.display = 'block';
-              document.getElementById('startCondition').style.display = 'block';
-              document.getElementById('duration').style.display = 'block';
-              // Set saved options for dependent cards
-              const dependentOptions = sharedData.dependentOptions || {};
-              document.getElementById('startCondition').value = dependentOptions.startCondition || 'start';
-              document.getElementById('duration').value = dependentOptions.duration || '';
-            }
-          });
+      if (dependencyType === 'dependent' && independentCardId) {
+        fetchAndDisplayIndependentCards(independentCardId);
+        // Display duration options for dependent cards
+        document.getElementById('dependentOptions').style.display = 'block';
+        document.getElementById('startCondition').style.display = 'block';
+        document.getElementById('duration').style.display = 'block';
+        // Set saved options for dependent cards
+        document.getElementById('startCondition').value = dependentOptions.startCondition || 'start';
+        document.getElementById('duration').value = dependentOptions.duration || '';
       } else {
         document.getElementById('independentCardsSection').style.display = 'none';
         document.getElementById('dependentOptions').style.display = 'none';
@@ -82,23 +76,16 @@ document.getElementById('dependency').addEventListener('change', function() {
 document.getElementById('save').addEventListener('click', function() {
   const dependency = document.getElementById('dependency').value;
   const independentCardId = dependency === 'dependent' ? document.getElementById('independentCards').value : null;
+  const startCondition = document.getElementById('startCondition').value;
+  const duration = document.getElementById('duration').value;
 
-  t.set('card', 'shared', 'dependencyType', dependency)
-    .then(() => {
-      if(dependency === 'dependent' && independentCardId) {
-        return t.set('card', 'shared', 'independentCardId', independentCardId);
-      }
-    })
-    .then(() => {
-      if(dependency === 'dependent') {
-        // Save the options for dependent cards
-        const startCondition = document.getElementById('startCondition').value;
-        const duration = document.getElementById('duration').value;
-        const dependentOptions = { startCondition, duration };
-        return t.set('card', 'shared', 'dependentOptions', dependentOptions);
-      }
-    })
-    .then(() => t.closePopup());
+  const dependentOptions = dependency === 'dependent' ? { startCondition, duration } : {};
+
+  t.set('card', 'shared', {
+    dependencyType: dependency,
+    independentCardId: independentCardId,
+    dependentOptions: dependentOptions
+  }).then(() => t.closePopup());
 });
 
 initializeForm();
