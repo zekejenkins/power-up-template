@@ -455,54 +455,32 @@ function durationToMilliseconds(duration) {
 
 // New polling function to check card completion status
 // New polling function to check card completion status with error handling
+// Updated function with added error handling and adjustment based on your JSON structure
 function pollForCardUpdates() {
   var t = TrelloPowerUp.iframe();
-  
-  t.cards('all').then(function(cards) {
-    cards.forEach(card => {
-      // Assuming 'dueComplete' indicates the completion status of the card's due date.
-      // You may need to adjust this based on your application's implementation.
-      if (card.dueComplete) {
-        onCardCompletion(card.id, true).catch(function(error) {
-          // Error handling for onCardCompletion failures
-          console.error("Error processing card completion:", error);
-        });
-      }
-    });
-  }).catch(function(error) {
-    // Error handling for t.cards('all') failures
-    console.error("Error fetching cards for polling:", error);
-  });
-}
 
-// Function to handle a card's completion and update dependent cards accordingly, with error handling
-function onCardCompletion(cardId, isCompleted) {
-  var t = TrelloPowerUp.iframe();
-  
-  if (!isCompleted) return Promise.resolve(); // Exit if the card is not marked as complete.
-
-  return t.cards('all').then(function(cards) {
-    const dependentCardPromises = cards.map(card =>
-      t.get(card.id, 'shared', 'independentCardId').then(independentCardId => {
-        if (independentCardId === cardId) {
-          // This card is dependent on the completed card.
-          return t.get(card.id, 'shared', 'dependentOptions').then(dependentOptions => {
-            if (dependentOptions && dependentOptions.startCondition === 'after') {
-              // Dependent card should start now. Let's set the start and due dates.
-              return setStartAndDueDatesForDependentCard(card.id, dependentOptions.duration);
-            }
-          }).catch(function(error) {
-            // Error handling for dependent card processing failures
-            console.error(`Error processing dependent options for card ${card.id}:`, error);
+  t.cards('all')
+    .then(function(cards) {
+      cards.forEach(card => {
+        // Using dueComplete from your JSON structure to check card completion
+        if (card.dueComplete) {
+          onCardCompletion(card.id, true).catch(function(error) {
+            // Log errors encountered when processing card completion
+            console.error(`Error processing completion for card ${card.id}:`, error);
           });
         }
-      })
-    );
-
-    return Promise.all(dependentCardPromises);
-  });
+      });
+    })
+    .catch(function(error) {
+      // Log errors encountered when fetching cards
+      console.error("Error fetching cards for polling:", error);
+    });
 }
+
+// Assumes onCardCompletion function already exists and handles the logic for dependent cards
+// You may need to adjust onCardCompletion implementation based on your specific logic
 
 // Start polling for updates every 10 seconds
 setInterval(pollForCardUpdates, 10000);
+
 
