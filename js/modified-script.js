@@ -33,8 +33,9 @@ function fetchAndDisplayIndependentCards(selectedCardId) {
 }
 
 function initializeForm() {
-  t.get('card', 'shared', 'dependencyType')
-    .then(function(dependencyType) {
+  t.get('card', 'shared', ['dependencyType', 'dependentOptions'])
+    .then(function(cardData) {
+      const dependencyType = cardData.dependencyType;
       if(dependencyType) {
         document.getElementById('dependency').value = dependencyType;
         if(dependencyType === 'dependent') {
@@ -43,9 +44,7 @@ function initializeForm() {
               fetchAndDisplayIndependentCards(independentCardId);
             })
             .then(function() {
-              return t.get('card', 'shared', 'dependentOptions');
-            })
-            .then(function(dependentOptions) {
+              const dependentOptions = cardData.dependentOptions;
               if (dependentOptions) {
                 document.getElementById('startCondition').value = dependentOptions.startCondition;
                 document.getElementById('duration').value = dependentOptions.duration;
@@ -64,6 +63,7 @@ function initializeForm() {
       console.error('Error initializing form:', err);
     });
 }
+
 
 document.getElementById('dependency').addEventListener('change', function() {
   if(this.value === 'dependent') {
