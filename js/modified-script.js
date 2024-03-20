@@ -6,19 +6,19 @@ function fetchAndDisplayIndependentCards(selectedCardId) {
   t.cards('all')
     .then(function(cards) {
       const independentCardPromises = cards.map(card =>
-        t.get(card.id, 'shared', ['dependencyType', 'startCondition'])
-          .then(data => ({ card, startCondition: data.startCondition }))
+        t.get(card.id, 'shared', 'dependencyType')
+          .then(dependencyType => dependencyType === 'independent' ? card : null)
       );
 
       return Promise.all(independentCardPromises);
     })
     .then(function(filteredCards) {
-      const independentCards = filteredCards.filter(({ card }) => card.dependencyType === 'independent');
+      const independentCards = filteredCards.filter(card => card !== null);
       
       const select = document.getElementById('independentCards');
       select.innerHTML = ''; // Clear existing options
 
-      independentCards.forEach(({ card, startCondition }) => {
+      independentCards.forEach(card => {
         const option = document.createElement('option');
         option.value = card.id; // Use card ID as the value
         option.textContent = card.name; // Use card name as the text content
