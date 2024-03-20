@@ -70,7 +70,17 @@ document.getElementById('save').addEventListener('click', function() {
         return t.set('card', 'shared', 'independentCardId', independentCardId);
       }
     })
+    .then(() => {
+      if(dependency === 'dependent') {
+        // Save the options for dependent cards
+        const startCondition = document.getElementById('startCondition').value;
+        const duration = document.getElementById('duration').value;
+        const dependentOptions = { startCondition, duration };
+        return t.set('card', 'shared', 'dependentOptions', dependentOptions);
+      }
+    })
     .then(() => t.closePopup());
 });
+
 
 initializeForm();
