@@ -33,7 +33,7 @@ function fetchAndDisplayIndependentCards(selectedCardId) {
 }
 
 function initializeForm() {
-  t.get('card', 'shared', 'dependencyType').then(function(dependencyType) {
+  t.get('card', 'shared', 'dependencyType','startCondition','duration').then(function(dependencyType) {
     if(dependencyType) {
       document.getElementById('dependency').value = dependencyType;
       if(dependencyType === 'dependent') {
@@ -64,10 +64,10 @@ document.getElementById('save').addEventListener('click', function() {
   const dependency = document.getElementById('dependency').value;
   const independentCardId = dependency === 'dependent' ? document.getElementById('independentCards').value : null;
 
-  t.set('card', 'shared', 'dependencyType', dependency)
+  t.set('card', 'shared', 'dependencyType','startCondition','duration')
     .then(() => {
       if(dependency === 'dependent' && independentCardId) {
-        return t.set('card', 'shared', 'independentCardId', independentCardId);
+        return t.set('card', 'shared', 'independentCardId','startCondition','duration', independentCardId);
       }
     })
     .then(() => t.closePopup());
