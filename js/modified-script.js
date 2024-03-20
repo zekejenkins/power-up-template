@@ -42,13 +42,6 @@ function initializeForm() {
         });
         // Display duration options for dependent cards
         document.getElementById('dependentOptions').style.display = 'block';
-        // Fetch and set saved options for dependent cards
-        t.get('card', 'shared', 'dependentOptions').then(function(dependentOptions) {
-          if (dependentOptions) {
-            document.getElementById('startCondition').value = dependentOptions.startCondition;
-            document.getElementById('duration').value = dependentOptions.duration;
-          }
-        });
       } else {
         document.getElementById('independentCardsSection').style.display = 'none';
         document.getElementById('dependentOptions').style.display = 'none';
@@ -70,8 +63,6 @@ document.getElementById('dependency').addEventListener('change', function() {
 document.getElementById('save').addEventListener('click', function() {
   const dependency = document.getElementById('dependency').value;
   const independentCardId = dependency === 'dependent' ? document.getElementById('independentCards').value : null;
-  const startCondition = document.getElementById('startCondition').value;
-  const duration = document.getElementById('duration').value;
 
   t.set('card', 'shared', 'dependencyType', dependency)
     .then(() => {
@@ -79,35 +70,7 @@ document.getElementById('save').addEventListener('click', function() {
         return t.set('card', 'shared', 'independentCardId', independentCardId);
       }
     })
-    .then(() => {
-      if(dependency === 'dependent') {
-        // Save the options for dependent cards
-        return t.set('card', 'shared', 'dependentOptions', { startCondition, duration });
-      }
-    })
     .then(() => t.closePopup());
-});
-
-// Listen for changes in the completion status of the independent card
-t.render(() => {
-  t.card('id', 'name', 'dueComplete')
-    .then((card) => {
-      if (card.dueComplete && card.name === 'Name of the independent card') {
-        // Get the dependent card ID and its saved options
-        t.get('card', 'shared', 'dependentOptions')
-          .then(dependentOptions => {
-            if (dependentOptions) {
-              // Calculate start and due dates based on options and completion date of the independent card
-              const startDate = // Calculate start date based on options and completion date of the independent card
-              const dueDate = // Calculate due date based on start date and duration from options
-              // Update the dependent card's start and due dates
-              t.set(cardId, 'due', dueDate);
-              // Assuming you have a custom field for start date, update that too
-              t.set(cardId, 'custom', 'Start Date', startDate);
-            }
-          });
-      }
-    });
 });
 
 initializeForm();
