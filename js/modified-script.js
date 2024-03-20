@@ -33,22 +33,31 @@ function fetchAndDisplayIndependentCards(selectedCardId) {
 }
 
 function initializeForm() {
-  t.get('card', 'shared', 'dependencyType').then(function(dependencyType) {
-    if(dependencyType) {
-      document.getElementById('dependency').value = dependencyType;
-      if(dependencyType === 'dependent') {
-        t.get('card', 'shared', 'independentCardId').then(function(independentCardId) {
+  t.get('card', 'shared', ['dependencyType', 'independentCardId', 'dependentOptions'])
+    .then(function(sharedData) {
+      const dependencyType = sharedData.dependencyType;
+      if(dependencyType) {
+        document.getElementById('dependency').value = dependencyType;
+        if(dependencyType === 'dependent') {
+          const independentCardId = sharedData.independentCardId;
           fetchAndDisplayIndependentCards(independentCardId);
-        });
-        // Display duration options for dependent cards
-        document.getElementById('dependentOptions').style.display = 'block';
-      } else {
-        document.getElementById('independentCardsSection').style.display = 'none';
-        document.getElementById('dependentOptions').style.display = 'none';
+          // Display duration options for dependent cards
+          document.getElementById('dependentOptions').style.display = 'block';
+          // Display and set saved options for dependent cards
+          const dependentOptions = sharedData.dependentOptions || {};
+          document.getElementById('startCondition').value = dependentOptions.startCondition || 'start';
+          document.getElementById('duration').value = dependentOptions.duration || '';
+        } else {
+          document.getElementById('independentCardsSection').style.display = 'none';
+          document.getElementById('dependentOptions').style.display = 'none';
+        }
       }
-    }
-  });
+    })
+    .catch(function(err) {
+      console.error('Error initializing form:', err);
+    });
 }
+
 
 document.getElementById('dependency').addEventListener('change', function() {
   if(this.value === 'dependent') {
