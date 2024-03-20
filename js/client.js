@@ -438,49 +438,29 @@ function onCardCompletion(cardId, isCompleted) {
 }
 
 /// Assuming these functions are defined in your script
-function setStartAndDueDatesForDependentCard(cardId, duration) {
-  const startDate = new Date(); // The start date is now.
-  const dueDate = new Date(startDate.getTime() + durationToMilliseconds(duration));
 
-  t.set(cardId, 'shared', 'startDate', startDate.toISOString()).then(() => {
-    t.set(cardId, 'shared', 'dueDate', dueDate.toISOString());
-  });
-}
 
-function durationToMilliseconds(duration) {
-  const durationParts = duration.split(' ');
-  const days = parseInt(durationParts[0]);
-  return days * 24 * 60 * 60 * 1000; // Convert days to milliseconds.
-}
-
-// New polling function to check card completion status
-// New polling function to check card completion status with error handling
-// Updated function with added error handling and adjustment based on your JSON structure
-function pollForCardUpdates() {
-  var t = TrelloPowerUp.iframe();
-
-  t.cards('all')
-    .then(function(cards) {
-      cards.forEach(card => {
-        // Using dueComplete from your JSON structure to check card completion
-        if (card.dueComplete) {
-          onCardCompletion(card.id, true).catch(function(error) {
-            // Log errors encountered when processing card completion
-            console.error(`Error processing completion for card ${card.id}:`, error);
-          });
-        }
+function startPolling(t){
+  // Assuming you have a function defined to fetch and process cards
+  function fetchAndProcessCards() {
+    t.cards('all')
+      .then(function(cards) {
+        cards.forEach(function(card) {
+          if (card.dueComplete) {
+            // Your logic for handling a completed card goes here
+            console.log(`Card ${card.name} is completed.`);
+            // For example, calling onCardCompletion or similar
+          }
+        });
+      })
+      .catch(function(error) {
+        console.error("Error during polling for card updates:", error);
       });
-    })
-    .catch(function(error) {
-      // Log errors encountered when fetching cards
-      console.error("Error fetching cards for polling:", error);
-    });
+  }
+
+  // Start polling every 10 seconds
+  setInterval(fetchAndProcessCards, 10000);
 }
 
-// Assumes onCardCompletion function already exists and handles the logic for dependent cards
-// You may need to adjust onCardCompletion implementation based on your specific logic
-
-// Start polling for updates every 10 seconds
-setInterval(pollForCardUpdates, 10000);
 
 
