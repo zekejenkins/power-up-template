@@ -37,7 +37,7 @@ function initializeForm() {
     if(dependencyType) {
       document.getElementById('dependency').value = dependencyType;
       if(dependencyType === 'dependent') {
-        t.get('card', 'shared', 'independentCardId').then(function(independentCardId) {
+        t.get('card', 'shared', 'independentCardId','startCondition','duration').then(function(independentCardId) {
           fetchAndDisplayIndependentCards(independentCardId);
         });
         // Display duration options for dependent cards
