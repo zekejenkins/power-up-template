@@ -437,25 +437,52 @@ function onCardCompletion(cardId, isCompleted) {
   });
 }
 
-// Sets the start and due dates for a dependent card based on the duration.
+/// Assuming these functions are defined in your script
 function setStartAndDueDatesForDependentCard(cardId, duration) {
   const startDate = new Date(); // The start date is now.
   const dueDate = new Date(startDate.getTime() + durationToMilliseconds(duration));
 
-  // Assuming you have a way to set the start and due dates on a card. The implementation depends on your application's specifics.
   t.set(cardId, 'shared', 'startDate', startDate.toISOString()).then(() => {
     t.set(cardId, 'shared', 'dueDate', dueDate.toISOString());
   });
 }
 
-// Converts a duration string to milliseconds. Implement this based on how you format duration.
-// For example, if duration is in days: "5 days"
 function durationToMilliseconds(duration) {
-  // Example implementation for duration in days.
   const durationParts = duration.split(' ');
   const days = parseInt(durationParts[0]);
   return days * 24 * 60 * 60 * 1000; // Convert days to milliseconds.
 }
+
+// New polling function to check card completion status
+function pollForCardUpdates() {
+  var t = TrelloPowerUp.iframe();
+  
+  t.cards('all').then(function(cards) {
+    cards.forEach(card => {
+      // Here, we assume 'dueComplete' is a field indicating whether the card's due date has been completed.
+      // You'll need to adjust based on how your application tracks completion.
+      if(card.dueComplete) {
+        onCardCompletion(card.id, true);
+      }
+    });
+  });
+}
+
+// Function that encapsulates the logic for handling a card's completion
+function onCardCompletion(cardId, isCompleted) {
+  var t = TrelloPowerUp.iframe();
+  
+  if (!isCompleted) return; // Exit if the card is not marked as complete.
+
+  // Implement the logic to handle the completion of an independent card and update dependent cards
+  // This might involve setting start and due dates for dependent cards, similar to the earlier logic
+  console.log(`Handling completion for card: ${cardId}`);
+  // Add your existing logic here for handling the completion and updating dependent cards
+}
+
+// Start polling for updates every 10 seconds
+setInterval(pollForCardUpdates, 10000);
+
 
 // You would need to integrate the onCardCompletion function to be called whenever a card's completion status changes.
 // This could be through a webhook, event listener, or any other method available in your application's context.
