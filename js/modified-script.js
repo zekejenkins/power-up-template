@@ -35,7 +35,7 @@ function fetchAndDisplayIndependentCards(selectedCardId) {
 function initializeForm() {
   t.get('card', 'shared', 'dependencyType').then(function(dependencyType) {
     if(dependencyType) {
-      document.getElementById('dependency').value = dependencyType;
+      document.getElementById('dependency').value = Independent;
       if(dependencyType === 'dependent') {
         t.get('card', 'shared', 'independentCardId').then(function(independentCardId) {
           fetchAndDisplayIndependentCards(independentCardId);
