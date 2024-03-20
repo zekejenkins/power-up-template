@@ -28,22 +28,20 @@ function fetchAndDisplayIndependentCards(selectedCardId) {
         }
       });
 
-      document.getElementById('independentCardsSection').style.display = independentCards.length > 0 ? 'block' : 'none';
+      document.getElementById('independentCardsSection').style.display = independentCards.length > 0 && document.getElementById('dependency').value === 'dependent' ? 'block' : 'none';
     });
 }
 
 function initializeForm() {
-  t.get('card', 'shared', ['dependencyType', 'independentCardId', 'dependentOptions']).then(function(data) {
-    const { dependencyType, independentCardId, dependentOptions } = data;
-
-    if (dependencyType) {
+  t.get('card', 'shared', 'dependencyType').then(function(dependencyType) {
+    if(dependencyType) {
       document.getElementById('dependency').value = dependencyType;
-      if (dependencyType === 'dependent' && independentCardId) {
-        fetchAndDisplayIndependentCards(independentCardId);
+      if(dependencyType === 'dependent') {
+        t.get('card', 'shared', 'independentCardId').then(function(independentCardId) {
+          fetchAndDisplayIndependentCards(independentCardId);
+        });
         // Display duration options for dependent cards
         document.getElementById('dependentOptions').style.display = 'block';
-        document.getElementById('startCondition').value = dependentOptions.startCondition || 'start';
-        document.getElementById('duration').value = dependentOptions.duration || '';
       } else {
         document.getElementById('independentCardsSection').style.display = 'none';
         document.getElementById('dependentOptions').style.display = 'none';
@@ -52,19 +50,27 @@ function initializeForm() {
   });
 }
 
+document.getElementById('dependency').addEventListener('change', function() {
+  if(this.value === 'dependent') {
+    fetchAndDisplayIndependentCards();
+    document.getElementById('dependentOptions').style.display = 'block';
+  } else {
+    document.getElementById('independentCardsSection').style.display = 'none';
+    document.getElementById('dependentOptions').style.display = 'none';
+  }
+});
+
 document.getElementById('save').addEventListener('click', function() {
   const dependency = document.getElementById('dependency').value;
   const independentCardId = dependency === 'dependent' ? document.getElementById('independentCards').value : null;
-  const startCondition = document.getElementById('startCondition').value;
-  const duration = document.getElementById('duration').value;
 
-  const dependentOptions = dependency === 'dependent' ? { startCondition, duration } : {};
-
-  t.set('card', 'shared', {
-    dependencyType: dependency,
-    independentCardId: independentCardId,
-    dependentOptions: dependentOptions
-  }).then(() => t.closePopup());
+  t.set('card', 'shared', 'dependencyType', dependency)
+    .then(() => {
+      if(dependency === 'dependent' && independentCardId) {
+        return t.set('card', 'shared', 'independentCardId', independentCardId);
+      }
+    })
+    .then(() => t.closePopup());
 });
 
 initializeForm();
