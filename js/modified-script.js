@@ -40,8 +40,11 @@ function initializeForm() {
         t.get('card', 'shared', 'independentCardId').then(function(independentCardId) {
           fetchAndDisplayIndependentCards(independentCardId);
         });
+        // Display duration options for dependent cards
+        document.getElementById('dependentOptions').style.display = 'block';
       } else {
         document.getElementById('independentCardsSection').style.display = 'none';
+        document.getElementById('dependentOptions').style.display = 'none';
       }
     }
   });
@@ -50,8 +53,10 @@ function initializeForm() {
 document.getElementById('dependency').addEventListener('change', function() {
   if(this.value === 'dependent') {
     fetchAndDisplayIndependentCards();
+    document.getElementById('dependentOptions').style.display = 'block';
   } else {
     document.getElementById('independentCardsSection').style.display = 'none';
+    document.getElementById('dependentOptions').style.display = 'none';
   }
 });
 
