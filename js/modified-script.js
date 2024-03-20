@@ -1,4 +1,28 @@
 /* global TrelloPowerUp */
+TrelloPowerUp.initialize({
+  'board-buttons': function(t, options) {
+    return [{
+      icon: GRAY_ICON, // Your icon path here
+      text: 'Show Completed Cards',
+      callback: function(t) {
+        showCompletedCards(t);
+      }
+    }];
+  },
+  // Add other capabilities as needed
+});
+
+function showCompletedCards(t) {
+  t.cards('all')
+    .then(function(cards) {
+      const completedCards = cards.filter(card => card.dueComplete);
+      console.log("Completed Cards:", completedCards);
+      alert(`Completed Cards: ${completedCards.map(card => card.name).join(', ')}`);
+    })
+    .catch(function(error) {
+      console.error("Failed to fetch completed cards:", error);
+    });
+}
 
 var t = TrelloPowerUp.iframe();
 
