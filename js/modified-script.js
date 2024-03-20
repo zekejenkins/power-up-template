@@ -33,15 +33,15 @@ function fetchAndDisplayIndependentCards(selectedCardId) {
 }
 
 function initializeForm() {
-  t.get('card', 'shared', 'dependencyType').then(function(dependencyType) {
-    if(dependencyType) {
+  t.get('card', 'shared', 'startCondition').then(function(startCondition) {
+    if(startCondition) {
       document.getElementById('dependency').value = dependencyType;
-      if(dependencyType === 'dependent') {
+      if(dependencyType === 'With') {
         t.get('card', 'shared', 'independentCardId').then(function(independentCardId) {
           fetchAndDisplayIndependentCards(independentCardId);
         });
         // Display duration options for dependent cards
-        document.getElementById('dependentOptions').style.display = 'block';
+        document.getElementById('startCondition').style.display = 'block';
       } else {
         document.getElementById('independentCardsSection').style.display = 'none';
         document.getElementById('dependentOptions').style.display = 'none';
