@@ -37,12 +37,27 @@ function initializeForm() {
     if(dependencyType) {
       document.getElementById('dependency').value = dependencyType;
       if(dependencyType === 'dependent') {
+        // Retrieve and set the independentCardId
         t.get('card', 'shared', 'independentCardId').then(function(independentCardId) {
           fetchAndDisplayIndependentCards(independentCardId);
         });
-        // Display duration options for dependent cards
+
+        // Retrieve and set the startCondition and duration
+        t.get('card', 'shared', 'dependentOptions').then(function(dependentOptions) {
+          if(dependentOptions) {
+            if(dependentOptions.startCondition) {
+              document.getElementById('startCondition').value = dependentOptions.startCondition;
+            }
+            if(dependentOptions.duration) {
+              document.getElementById('duration').value = dependentOptions.duration;
+            }
+          }
+        });
+
+        // Display the dependent options section
         document.getElementById('dependentOptions').style.display = 'block';
       } else {
+        // Hide the dependent options section and independent cards section
         document.getElementById('independentCardsSection').style.display = 'none';
         document.getElementById('dependentOptions').style.display = 'none';
       }
@@ -50,15 +65,6 @@ function initializeForm() {
   });
 }
 
-document.getElementById('dependency').addEventListener('change', function() {
-  if(this.value === 'dependent') {
-    fetchAndDisplayIndependentCards();
-    document.getElementById('dependentOptions').style.display = 'block';
-  } else {
-    document.getElementById('independentCardsSection').style.display = 'none';
-    document.getElementById('dependentOptions').style.display = 'none';
-  }
-});
 
 document.getElementById('save').addEventListener('click', function() {
   const dependency = document.getElementById('dependency').value;
