@@ -28,7 +28,7 @@ function fetchAndDisplayIndependentCards(selectedCardId) {
         }
       });
 
-      document.getElementById('independentCardsSection').style.display = independentCards.length > 0 && document.getElementById('dependency').value === 'dependent' ? 'block' : 'none';
+      document.getElementById('independentCardsSection').style.display = independentCards.length > 0 ? 'block' : 'none';
     });
 }
 
@@ -42,36 +42,15 @@ function initializeForm() {
         fetchAndDisplayIndependentCards(independentCardId);
         // Display duration options for dependent cards
         document.getElementById('dependentOptions').style.display = 'block';
-        document.getElementById('startCondition').style.display = 'block';
-        document.getElementById('duration').style.display = 'block';
-        // Set saved options for dependent cards
         document.getElementById('startCondition').value = dependentOptions.startCondition || 'start';
         document.getElementById('duration').value = dependentOptions.duration || '';
       } else {
         document.getElementById('independentCardsSection').style.display = 'none';
         document.getElementById('dependentOptions').style.display = 'none';
-        // Hide start condition and duration for independent cards
-        document.getElementById('startCondition').style.display = 'none';
-        document.getElementById('duration').style.display = 'none';
       }
     }
   });
 }
-
-document.getElementById('dependency').addEventListener('change', function() {
-  if(this.value === 'dependent') {
-    fetchAndDisplayIndependentCards();
-    document.getElementById('dependentOptions').style.display = 'block';
-    document.getElementById('startCondition').style.display = 'block';
-    document.getElementById('duration').style.display = 'block';
-  } else {
-    document.getElementById('independentCardsSection').style.display = 'none';
-    document.getElementById('dependentOptions').style.display = 'none';
-    // Hide start condition and duration for independent cards
-    document.getElementById('startCondition').style.display = 'none';
-    document.getElementById('duration').style.display = 'none';
-  }
-});
 
 document.getElementById('save').addEventListener('click', function() {
   const dependency = document.getElementById('dependency').value;
