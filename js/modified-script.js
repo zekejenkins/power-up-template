@@ -39,7 +39,7 @@ function initializeForm() {
       if(dependencyType === 'dependent') {
         t.card('all')
           .then(function(card) {
-            const pluginData = card.pluginData.find(data => data.idPlugin === '65f4ae09f22c7c2b39fbd5b5');
+            const pluginData = card.pluginData.find(data => data.access === 'shared');
             if (pluginData) {
               const sharedData = JSON.parse(pluginData.value);
               fetchAndDisplayIndependentCards(sharedData.independentCardId);
