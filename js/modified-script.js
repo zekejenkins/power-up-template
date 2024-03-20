@@ -33,21 +33,28 @@ function fetchAndDisplayIndependentCards(selectedCardId) {
 }
 
 function initializeForm() {
-  t.get('card', 'shared', 'dependencyType').then(function(dependencyType) {
-    if(dependencyType) {
-      document.getElementById('dependency').value = dependencyType;
-      if(dependencyType === 'dependent') {
-        t.get('card', 'shared', 'independentCardId').then(function(independentCardId) {
+  t.get('card', 'shared', ['dependencyType', 'independentCardId', 'startCondition', 'duration'])
+    .then(function(data) {
+      const dependencyType = data[0];
+      if(dependencyType) {
+        document.getElementById('dependency').value = dependencyType;
+        if(dependencyType === 'dependent') {
+          const independentCardId = data[1];
           fetchAndDisplayIndependentCards(independentCardId);
-        });
-        // Display duration options for dependent cards
-        document.getElementById('dependentOptions').style.display = 'block';
-      } else {
-        document.getElementById('independentCardsSection').style.display = 'none';
-        document.getElementById('dependentOptions').style.display = 'none';
+          // Display duration options for dependent cards
+          document.getElementById('dependentOptions').style.display = 'block';
+          // Display and set saved options for dependent cards
+          document.getElementById('startCondition').value = data[2] || 'start';
+          document.getElementById('duration').value = data[3] || '';
+        } else {
+          document.getElementById('independentCardsSection').style.display = 'none';
+          document.getElementById('dependentOptions').style.display = 'none';
+        }
       }
-    }
-  });
+    })
+    .catch(function(err) {
+      console.error('Error initializing form:', err);
+    });
 }
 
 document.getElementById('dependency').addEventListener('change', function() {
