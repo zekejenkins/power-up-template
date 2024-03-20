@@ -438,35 +438,6 @@ function onCardCompletion(cardId, isCompleted) {
 }
 
 
-// This function checks for completed cards and logs their IDs to the console.
-TrelloPowerUp.initialize({
-  'board-buttons': function(t, options) {
-    return [{
-      icon: GRAY_ICON, // Your icon
-      text: 'Track Completed Cards',
-      callback: function(t) {
-        startPollingForCompletedCards(t);
-      }
-    }];
-  },
-  // other capabilities
-});
-
-function startPollingForCompletedCards(t) {
-  // Use the t object to interact with the Trello API
-  const poll = () => {
-    t.cards('all')
-      .then(cards => {
-        const completedCardIds = cards.filter(card => card.dueComplete).map(card => card.id);
-        console.log('Completed Card IDs:', completedCardIds);
-      })
-      .catch(console.error);
-  };
-  
-  poll(); // Call immediately to avoid waiting for the first interval
-  setInterval(poll, 10000); // Then poll every 10 seconds
-}
-
 
 
 
