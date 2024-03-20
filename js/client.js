@@ -454,36 +454,55 @@ function durationToMilliseconds(duration) {
 }
 
 // New polling function to check card completion status
+// New polling function to check card completion status with error handling
 function pollForCardUpdates() {
   var t = TrelloPowerUp.iframe();
   
   t.cards('all').then(function(cards) {
     cards.forEach(card => {
-      // Here, we assume 'dueComplete' is a field indicating whether the card's due date has been completed.
-      // You'll need to adjust based on how your application tracks completion.
-      if(card.dueComplete) {
-        onCardCompletion(card.id, true);
+      // Assuming 'dueComplete' indicates the completion status of the card's due date.
+      // You may need to adjust this based on your application's implementation.
+      if (card.dueComplete) {
+        onCardCompletion(card.id, true).catch(function(error) {
+          // Error handling for onCardCompletion failures
+          console.error("Error processing card completion:", error);
+        });
       }
     });
+  }).catch(function(error) {
+    // Error handling for t.cards('all') failures
+    console.error("Error fetching cards for polling:", error);
   });
 }
 
-// Function that encapsulates the logic for handling a card's completion
+// Function to handle a card's completion and update dependent cards accordingly, with error handling
 function onCardCompletion(cardId, isCompleted) {
   var t = TrelloPowerUp.iframe();
   
-  if (!isCompleted) return; // Exit if the card is not marked as complete.
+  if (!isCompleted) return Promise.resolve(); // Exit if the card is not marked as complete.
 
-  // Implement the logic to handle the completion of an independent card and update dependent cards
-  // This might involve setting start and due dates for dependent cards, similar to the earlier logic
-  console.log(`Handling completion for card: ${cardId}`);
-  // Add your existing logic here for handling the completion and updating dependent cards
+  return t.cards('all').then(function(cards) {
+    const dependentCardPromises = cards.map(card =>
+      t.get(card.id, 'shared', 'independentCardId').then(independentCardId => {
+        if (independentCardId === cardId) {
+          // This card is dependent on the completed card.
+          return t.get(card.id, 'shared', 'dependentOptions').then(dependentOptions => {
+            if (dependentOptions && dependentOptions.startCondition === 'after') {
+              // Dependent card should start now. Let's set the start and due dates.
+              return setStartAndDueDatesForDependentCard(card.id, dependentOptions.duration);
+            }
+          }).catch(function(error) {
+            // Error handling for dependent card processing failures
+            console.error(`Error processing dependent options for card ${card.id}:`, error);
+          });
+        }
+      })
+    );
+
+    return Promise.all(dependentCardPromises);
+  });
 }
 
 // Start polling for updates every 10 seconds
 setInterval(pollForCardUpdates, 10000);
 
-
-// You would need to integrate the onCardCompletion function to be called whenever a card's completion status changes.
-// This could be through a webhook, event listener, or any other method available in your application's context.
-console.log('Loaded by: ' + document.referrer);
